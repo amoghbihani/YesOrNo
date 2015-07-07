@@ -1,0 +1,76 @@
+<!--
+    Project: Yes Or No
+    Author: Amogh Bihani
+-->
+
+<html>
+    <head>
+        <title>Yes or No</title>
+        <style type="text/css">
+            table {
+                width: 96%;
+                height: 80%;
+            }
+            .title {
+                background-color: #616161;
+                padding-top: 1%;
+                padding-bottom: 1%;
+                border-bottom-left-radius: 6px;
+                border-bottom-right-radius: 6px;
+                text-align: center;
+                color: #f0f0f0;
+            }
+        </style>
+    </head>
+    <body onload="load()">
+        <script type="text/javascript">
+            var ansDiv;
+            function success(response) {
+                var jsonResponse = JSON.parse(response);
+                var gif = new Image();
+                gif.src = jsonResponse.image;
+                gif.onload = function() {
+                    if (jsonResponse.answer == "no") {
+                        ansDiv.innerHTML = "No";
+                    } else {
+                        ansDiv.innerHTML = "Yes";
+                    }
+                    gif.width = ansDiv.offsetWidth * 0.98;
+                    document.getElementById("background").appendChild(gif);
+                }
+            }
+
+            function failure(status) {
+                fetchData();
+            }
+
+            function fetchData() {
+                var request = new XMLHttpRequest();
+                request.onload = function() {
+                    if (request.readyState == 4 && request.status == 200) {
+                            success(request.responseText);
+                    }
+                }
+                request.onerror = function() {
+                    failure(request.statusText);
+                }
+                request.open("GET", "http://yesno.wtf/api/", true);
+                request.send(null);
+            }
+
+            function load() {
+                ansDiv = document.getElementById("answer");
+                ansDiv.innerHTML = "Evaluating...";
+                fetchData();
+            }
+        </script>
+        <div class="title">
+            <h3 id="answer"></h3>
+        </div>
+        <table>
+            <td id="imageContainer">
+                <div id="background"></div>
+            </td>
+        </table>
+    </body>
+</html>
